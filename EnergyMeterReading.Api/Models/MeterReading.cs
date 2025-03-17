@@ -16,7 +16,7 @@ namespace EnergyMeterReading.Api.Models
         [Required]
 
         [ForeignKey("AccountId")]
-        public Account Account { get; set; }
+        public Account? Account { get; set; }
     }
 
 }
