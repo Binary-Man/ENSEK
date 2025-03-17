@@ -1,0 +1,6 @@
+@EnergyMeterReading.Api_HostAddress = http://localhost:5018
+
+GET {{EnergyMeterReading.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
