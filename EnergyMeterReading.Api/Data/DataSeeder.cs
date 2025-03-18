@@ -3,20 +3,33 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
+
 namespace EnergyMeterReading.Api.Data
 {
-    public static class DataSeeder
+    public class DataSeeder
     {
-        public static async Task SeedDataAsync(IServiceProvider serviceProvider)
-        {
-            using var scope = serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<DataSeeder> _logger;
+        private readonly IWebHostEnvironment _environment;
 
+        public DataSeeder(
+            ApplicationDbContext context,
+            ILogger<DataSeeder> logger,
+            IWebHostEnvironment environment
+            )
+        {
+            _context = context;
+            _logger = logger;
+            _environment = environment;
+        }
+
+        public async Task SeedDataAsync()
+        {
             // Apply any pending migrations
-            await context.Database.EnsureCreatedAsync();
+            await _context.Database.MigrateAsync();
 
             // Check if accounts are already seeded
-            if (await context.Accounts.AnyAsync())
+            if (await _context.Accounts.AnyAsync())
             {
                 return; // Already seeded
             }
@@ -24,13 +37,12 @@ namespace EnergyMeterReading.Api.Data
             try
             {
                 // Path to the CSV file (assuming it's in the project directory)
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TestData", "Test_Accounts.csv");
+                string filePath = Path.Combine(_environment.ContentRootPath, "Data", "TestData", "Test_Accounts.csv");
 
                 if (!File.Exists(filePath))
                 {
-                    // Log and exit if file doesn't exist
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                    logger.LogError($"Test accounts CSV file not found at {filePath}");
+                    // Log and exit if file doesn't exist                    
+                    _logger.LogError($"Test accounts CSV file not found at {filePath}");
                     return;
                 }
 
@@ -49,7 +61,7 @@ namespace EnergyMeterReading.Api.Data
                 {
                     var account = new Account
                     {
-                        Id = int.Parse(csv.GetField<string>("Id") ?? "0"),
+                        Id = int.Parse(csv.GetField<string>("AccountId") ?? "0"),
                         FirstName = csv.GetField<string>("FirstName") ?? "",
                         LastName = csv.GetField<string>("LastName") ?? ""
                     };
@@ -58,22 +70,20 @@ namespace EnergyMeterReading.Api.Data
                 }
 
                 // Add accounts to database
-                await context.Accounts.AddRangeAsync(accounts);
-                await context.SaveChangesAsync();
+                await _context.Accounts.AddRangeAsync(accounts);
+                await _context.SaveChangesAsync();
 
                 // Log success
-                var loggerSuccess = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                loggerSuccess.LogInformation($"Successfully seeded {accounts.Count} test accounts");
+
+                _logger.LogInformation($"Successfully seeded {accounts.Count} test accounts");
             }
 
 
-           catch (Exception ex)
+            catch (Exception ex)
             {
-                // Log error
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "Error seeding test accounts");
+                // Log error                
+                _logger.LogError(ex, "Error seeding test accounts");
             }
-
         }
-    }
+    } 
 }

@@ -13,6 +13,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register the DataSeeder as a transient service
+builder.Services.AddTransient<DataSeeder>();
+
 // Add services and validators
 builder.Services.AddScoped<MeterReadingValidator>();
 builder.Services.AddScoped<MeterReadingService>();
@@ -45,7 +48,20 @@ app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.MapControllers();
 
-// Seed database with test accounts
-await DataSeeder.SeedDataAsync(app.Services);
+// Seed database with test accounts using the registered service
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var seeder = services.GetRequiredService<DataSeeder>();
+        await seeder.SeedDataAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 app.Run();
