@@ -54,6 +54,10 @@ On the todo list:
 
 ### POST /api/meter-reading-uploads
 
+Send POST request via the .http file (EnergyMeterReading.Api.http) in the application once the application is running.
+
+OR
+
 Uploads and processes a meter reading CSV file.
 
 **Request:**
