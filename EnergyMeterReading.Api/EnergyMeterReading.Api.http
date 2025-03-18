@@ -1,6 +1,23 @@
 @EnergyMeterReading.Api_HostAddress = http://localhost:5018
 
-GET {{EnergyMeterReading.Api_HostAddress}}/weatherforecast/
+GET {{EnergyMeterReading.Api_HostAddress}}/api/get-meter-readings
 Accept: application/json
+
+###
+
+# Upload Meter Readings
+POST {{EnergyMeterReading.Api_HostAddress}}/api/meter-reading-uploads
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="Meter_Reading.csv"
+Content-Type: text/csv
+
+AccountId,MeterReadingDateTime,MeterReadValue
+2344,22/04/2019 09:24,12345
+2233,22/04/2019 12:25,54321
+8766,22/04/2019 12:25,98765
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###

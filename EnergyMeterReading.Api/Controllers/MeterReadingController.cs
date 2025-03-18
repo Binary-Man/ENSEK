@@ -57,7 +57,7 @@ namespace EnergyMeterReadingApi.Controllers
                 };
 
                 _logger.LogInformation(
-                    "Meter reading upload completed. Successful: {SuccessCount}, Failed: {FailCount}", 
+                    $"Meter reading upload completed. Successful: {successCount}, Failed: {failCount}", 
                     successCount, failCount);
 
                 return Ok(response);
