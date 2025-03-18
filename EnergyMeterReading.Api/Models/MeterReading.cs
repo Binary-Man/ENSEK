@@ -12,7 +12,7 @@ namespace EnergyMeterReading.Api.Models
         [Required]
         public DateTime ReadingDate { get; set; }
         [Required]
-        public int ReadingValue { get; set; }
+        public int MeterValue { get; set; }
         [Required]
 
         [ForeignKey("AccountId")]

@@ -19,16 +19,17 @@ namespace EnergyMeterReading.Api.Validators
 
             if (!accountExists)
             {
-                return (false, $"Account Id {reading.Id}does not esist.");
+                return (false, $"Account Id {reading.Id} does not exist.");
             }
 
             // Validate meter reading format (NNNNN)
-            if (!Regex.IsMatch(reading.ReadingValue.ToString(), @"^\d{5}$"))
+            if (!Regex.IsMatch(reading.MeterValue.ToString(), @"^\d{5}$"))
             {
-                return (false, $"Meter reading value must be in the format NNNNN (5 digits), got: {reading.ReadingValue}");
+                return (false, $"Meter reading value must be in the format NNNNN (5 digits), got: {reading.MeterValue}");
             }
 
             // Check for duplicate readings (same account, same date/time)
+            // Only checked these two entities as you shouldn't be able to take two reading on the day
             bool duplicateExists = await _context.MeterReadings.AnyAsync(m =>
                 m.AccountId == reading.AccountId &&
                 m.ReadingDate == reading.ReadingDate);

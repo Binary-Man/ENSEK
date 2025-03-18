@@ -4,7 +4,6 @@ using EnergyMeterReading.Api.Validators;
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Diagnostics.Metrics;
 
 namespace EnergyMeterReading.Api.Services
 {
@@ -17,8 +16,8 @@ namespace EnergyMeterReading.Api.Services
 
         public MeterReadingService(
             ApplicationDbContext context,
-        MeterReadingValidator validator,
-         ILogger<MeterReadingService> logger)
+            MeterReadingValidator validator,
+            ILogger<MeterReadingService> logger)
         {
             _context = context;
             _validator = validator;
@@ -73,7 +72,7 @@ namespace EnergyMeterReading.Api.Services
                         {
                             AccountId = accountId,
                             ReadingDate = meterReadingDateTime,
-                            ReadingValue = readingValue
+                            MeterValue = readingValue
                         };
 
                         // Validate reading
